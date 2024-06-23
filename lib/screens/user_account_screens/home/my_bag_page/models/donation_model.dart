@@ -143,7 +143,7 @@ class Donation {
   });
 
   Donation.fromJson(Map<String, dynamic> json) {
-    print(json);
+    print(json['redeem_codes']);
     id = json['id'];
     userId = json['user_id'];
     vendorId = json['vendor_id'];
@@ -389,6 +389,8 @@ class RedeemCode {
   String? redeemCode;
   String? updatedAt;
   String? createdAt;
+  dynamic status;
+  dynamic isRedeemed;
   int? id;
 
   RedeemCode(
@@ -403,6 +405,8 @@ class RedeemCode {
     redeemCode = json['redeem_code'];
     updatedAt = json['updated_at'];
     createdAt = json['created_at'];
+    status = json['status'];
+    isRedeemed = json['is_redeemed'];
     id = json['id'];
   }
 

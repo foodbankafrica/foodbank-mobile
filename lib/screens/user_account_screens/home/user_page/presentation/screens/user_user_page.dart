@@ -20,6 +20,8 @@ import '../../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../../auth/presentation/screens/signin_screen.dart';
 import 'change_password_page.dart';
 import 'kyc/kyc_screen.dart';
+import 'kyc/verifications_screen.dart';
+import 'support_screen.dart';
 
 class UserPage extends StatefulWidget {
   static String name = 'user-page';
@@ -55,7 +57,7 @@ class _UserPageState extends State<UserPage> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Text(
-                    'Personal Info',
+                    'Our Support',
                     style: Theme.of(context)
                         .textTheme
                         .headlineMedium
@@ -65,11 +67,26 @@ class _UserPageState extends State<UserPage> {
                 const SizedBox(height: 20),
                 const Divider(thickness: 0.5),
                 UserOptions(
-                  onTap: () {},
+                  onTap: () {
+                    context.push(SupportScreen.route);
+                  },
                   icon: 'info-circle',
                   title: 'Help And Support',
                   subtitle: 'Need Help?',
                 ),
+                const Divider(thickness: 0.5),
+                const SizedBox(height: 20),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(
+                    'Personal Info',
+                    style: Theme.of(context)
+                        .textTheme
+                        .headlineMedium
+                        ?.copyWith(fontSize: 24),
+                  ),
+                ),
+                const SizedBox(height: 20),
                 const Divider(thickness: 0.5),
                 UserOptions(
                   onTap: () {
@@ -100,7 +117,7 @@ class _UserPageState extends State<UserPage> {
                 const Divider(thickness: 0.5),
                 UserOptions(
                   onTap: () {
-                    context.push(KycScreen.route);
+                    context.push(VerificationsScreen.route);
                   },
                   icon: 'approve',
                   title: 'Verify Identity',

@@ -20,7 +20,6 @@ import 'auth/cache/user_cache.dart';
 import 'empty_wallet_message_screen.dart';
 import 'home/home_page/cache/business_cache.dart';
 import 'home/my_bag_page/cache/cart_cache.dart';
-import 'home/my_bag_page/models/cart.dart';
 import 'home/my_bag_page/presentation/bloc/bag_bloc.dart';
 import 'home/user_page/cache/address_cache.dart';
 import 'webview_screen.dart';

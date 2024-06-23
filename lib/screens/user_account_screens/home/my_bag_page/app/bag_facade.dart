@@ -2,7 +2,6 @@ import 'package:fpdart/fpdart.dart' show Either;
 
 import '../../../../../core/errors/failure.dart';
 import '../models/bag_model.dart';
-import '../models/cart.dart';
 import '../models/order_model.dart';
 import '../services/bag_service.dart';
 

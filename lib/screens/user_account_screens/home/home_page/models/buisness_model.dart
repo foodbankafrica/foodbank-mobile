@@ -65,7 +65,7 @@ class Businesses {
       });
     }
     branch =
-        json['branch'] != null ? new Branch.fromJson(json['branch']) : null;
+        json['branch'] != null ? Branch.fromJson(json['branch']) : null;
     distance = json["distance"];
     lowestAmount = json["lowest_amount"];
   }
@@ -90,8 +90,8 @@ class Businesses {
           deliveryLocations!.map((v) => v.toJson()).toList();
     }
 
-    if (this.branch != null) {
-      data['branch'] = this.branch!.toJson();
+    if (branch != null) {
+      data['branch'] = branch!.toJson();
     }
     data["distance"] = distance;
     data["lowest_amount"] = lowestAmount;

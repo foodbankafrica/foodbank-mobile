@@ -6,12 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:food_bank/common/bottom_sheets/delivery_address_sheet.dart';
 import 'package:food_bank/common/widgets.dart';
 import 'package:food_bank/config/extensions/custom_extensions.dart';
 import 'package:food_bank/screens/donor_account_screens/donor_checkout_screen.dart';
 import 'package:food_bank/screens/user_account_screens/auth/cache/user_cache.dart';
 import 'package:food_bank/screens/user_account_screens/home/home_page/presentation/screens/search_screen.dart';
-import 'package:food_bank/screens/user_account_screens/home/user_page/presentation/screens/delivery_address.dart';
 import 'package:food_bank/screens/user_account_screens/onboarding_screen.dart';
 import 'package:go_router/go_router.dart';
 
@@ -19,7 +19,6 @@ import '../../../../../../core/injections.dart';
 import '../../../../../../core/push_notification/device_info.dart';
 import '../../../../../../core/push_notification/notification_helper.dart';
 import '../../../../../../core/push_notification/push_notification_service.dart';
-import '../../../../../donor_account_screens/home/donor_home_page.dart';
 import '../../../../auth/app/auth_facade.dart';
 import '../../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../../checkout/presentation/screens/checkout_screen.dart';
@@ -49,6 +48,7 @@ class _HomePageState extends State<HomePage> {
   NotificationHelper? _notificationHelper;
 
   String currentFilter = "All";
+  String? pickedAddress;
   final UserCache userCache = UserCache.instance;
   final CartCache cartCache = CartCache.instance;
   final AddressCache addressCache = AddressCache.instance;
@@ -70,7 +70,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> onRefresh() async {
-    context.read<BusinessBloc>().add(GetBusinessesEvent(filteredBy: ""));
+    context.read<BusinessBloc>().add(
+          GetBusinessesEvent(
+            filteredBy: "",
+            addressId: addressCache.defaultAddressId,
+          ),
+        );
   }
 
   Future<void> _initPushNotifications() async {
@@ -128,9 +133,10 @@ class _HomePageState extends State<HomePage> {
       body: RefreshIndicator(
         onRefresh: onRefresh,
         child: SafeArea(
-          child: SingleChildScrollView(
-            child: Container(
-              padding: const EdgeInsets.only(top: 10, left: 16, right: 16),
+          child: Container(
+            padding: const EdgeInsets.only(top: 10, left: 16, right: 16),
+            height: MediaQuery.of(context).size.height,
+            child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -159,7 +165,30 @@ class _HomePageState extends State<HomePage> {
                             InkWell(
                               onTap: () {
                                 if (userCache.isAuthenticated) {
-                                  context.push(DeliveryAddressPage.route);
+                                  showModalBottomSheet(
+                                    context: context,
+                                    isScrollControlled: true,
+                                    isDismissible: false,
+                                    useSafeArea: true,
+                                    builder: (context) {
+                                      return DeliveryAddressBottomSheet(
+                                        onSelected: (address) {
+                                          context.read<BusinessBloc>().add(
+                                                GetBusinessesEvent(
+                                                  filteredBy: "",
+                                                  addressId:
+                                                      address.id.toString(),
+                                                ),
+                                              );
+                                          setState(() {
+                                            pickedAddress =
+                                                address.address!.writeTo(30);
+                                          });
+                                          context.pop();
+                                        },
+                                      );
+                                    },
+                                  );
                                 } else {
                                   context.go(OnboardingScreen.route);
                                 }
@@ -171,7 +200,8 @@ class _HomePageState extends State<HomePage> {
                                         ? "Loading..."
                                         : addressCache.addresses.isEmpty
                                             ? "No address"
-                                            : addressCache.defaultAddress,
+                                            : pickedAddress ??
+                                                addressCache.defaultAddress,
                                     style: Theme.of(context)
                                         .textTheme
                                         .bodyMedium
@@ -415,10 +445,10 @@ class _BusinessesWidgetState extends State<BusinessesWidget> {
   List<Businesses> businesses = [];
   final UserCache userCache = UserCache.instance;
   final BusinessCache businessCache = BusinessCache.instance;
+  final AddressCache addressCache = AddressCache.instance;
 
   @override
   void initState() {
-    print("----------------${widget.arg}-----------------------");
     if (widget.arg != null || !userCache.isAuthenticated) {
       context.read<BusinessBloc>().add(
             GetGuestBusinessesEvent(
@@ -431,6 +461,7 @@ class _BusinessesWidgetState extends State<BusinessesWidget> {
       if (businessCache.isEmpty) {
         context.read<BusinessBloc>().add(GetBusinessesEvent(
               filteredBy: "",
+              addressId: addressCache.defaultAddressId,
             ));
       } else {
         setState(() {
@@ -467,6 +498,7 @@ class _BusinessesWidgetState extends State<BusinessesWidget> {
             onTap: () {
               context.read<BusinessBloc>().add(GetBusinessesEvent(
                     filteredBy: "",
+                    addressId: addressCache.defaultAddressId,
                   ));
             },
           );

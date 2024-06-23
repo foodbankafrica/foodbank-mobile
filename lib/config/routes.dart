@@ -43,6 +43,8 @@ import '../screens/user_account_screens/home/my_bag_page/presentation/screens/tr
 import '../screens/user_account_screens/home/my_bag_page/presentation/screens/view_reoccurring_order_summary_screen.dart';
 import '../screens/user_account_screens/home/user_page/presentation/screens/change_password_page.dart';
 import '../screens/user_account_screens/home/user_page/presentation/screens/kyc/kyc_success_screen.dart';
+import '../screens/user_account_screens/home/user_page/presentation/screens/kyc/verifications_screen.dart';
+import '../screens/user_account_screens/home/user_page/presentation/screens/support_screen.dart';
 import '../screens/user_account_screens/home/user_page/presentation/screens/transaction_summary_screen.dart';
 
 final routes = GoRouter(
@@ -215,6 +217,12 @@ final routes = GoRouter(
           const ChangePasswordPage(),
     ),
     GoRoute(
+      path: VerificationsScreen.route,
+      name: VerificationsScreen.name,
+      builder: (BuildContext context, GoRouterState state) =>
+          const VerificationsScreen(),
+    ),
+    GoRoute(
       path: KycScreen.route,
       name: KycScreen.name,
       builder: (BuildContext context, GoRouterState state) => const KycScreen(),
@@ -230,6 +238,12 @@ final routes = GoRouter(
       name: DeliveryAddressPage.name,
       builder: (BuildContext context, GoRouterState state) =>
           const DeliveryAddressPage(),
+    ),
+    GoRoute(
+      path: SupportScreen.route,
+      name: SupportScreen.name,
+      builder: (BuildContext context, GoRouterState state) =>
+          const SupportScreen(),
     ),
     GoRoute(
       path: ReleaseNotesPage.route,

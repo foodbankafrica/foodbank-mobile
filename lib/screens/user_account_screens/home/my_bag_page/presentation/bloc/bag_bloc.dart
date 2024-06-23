@@ -2,7 +2,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../app/bag_facade.dart';
 import '../../models/bag_model.dart';
-import '../../models/cart.dart';
 import '../../models/order_model.dart';
 
 part 'bag_event.dart';

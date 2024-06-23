@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:food_bank/common/widgets.dart';
@@ -56,7 +57,7 @@ class _EnterDeliveryAddressBottomSheetState
             padding: const EdgeInsets.all(10.0),
             child: GooglePlaceAutoCompleteTextField(
               textEditingController: addressController,
-              googleAPIKey: "AIzaSyAyYEFe4MMHwD-zNVVpfWKIRcFiE-e2TN8",
+              googleAPIKey: dotenv.env['GOOGLE_MAP_API_KEY'] ?? '',
               inputDecoration: InputDecoration(
                 prefixIcon: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -76,13 +77,19 @@ class _EnterDeliveryAddressBottomSheetState
                 ),
               ),
               // debounceTime: 800, // default 600 ms,
-              countries: ["ng"], // optional by default null is set
+              countries: const ["ng"], // optional by default null is set
               isLatLngRequired:
                   true, // if you required coordinates from place detail
               getPlaceDetailWithLatLng: (Prediction prediction) {
-                // this method will return latlng with place detail
-                print("placeDetails" + prediction.lng.toString());
-              }, // this callback is called when isLatLngRequired is true
+                setState(
+                  () {
+                    widget.controller!.text = prediction.description ?? '';
+                  },
+                );
+                final latitude = double.parse(prediction.lat!);
+                final longitude = double.parse(prediction.lng!);
+                widget.onAdd!(latitude, longitude);
+              },
               itemClick: (Prediction prediction) {
                 addressController.text = prediction.description!;
                 addressController.selection = TextSelection.fromPosition(
@@ -90,14 +97,6 @@ class _EnterDeliveryAddressBottomSheetState
                     offset: prediction.description!.length,
                   ),
                 );
-                setState(
-                  () {
-                    widget.controller!.text = prediction.description ?? '';
-                  },
-                );
-                final latitude = double.parse(prediction.lat ?? "0");
-                final longitude = double.parse(prediction.lng ?? "0");
-                widget.onAdd!(latitude, longitude);
               },
               // if we want to make custom list item builder
               itemBuilder: (context, index, Prediction prediction) {

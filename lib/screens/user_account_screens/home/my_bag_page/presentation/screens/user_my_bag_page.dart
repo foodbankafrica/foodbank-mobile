@@ -9,7 +9,6 @@ import 'package:food_bank/screens/user_account_screens/home/my_bag_page/presenta
 import 'package:go_router/go_router.dart';
 
 import '../../../../my_bag_screen.dart';
-import '../../models/cart.dart';
 import 'bag_history_page.dart';
 
 class MyBagPage extends StatefulWidget {

@@ -41,6 +41,7 @@ class _CheckoutScreenState extends State<CheckoutScreen>
           context.read<BusinessBloc>().add(
                 GetProductsEvent(
                   vendorId: business!.business!.userId!.toString(),
+                  branchId: business!.branch!.id!.toString(),
                   category: currentCategory,
                 ),
               );
@@ -75,6 +76,7 @@ class _CheckoutScreenState extends State<CheckoutScreen>
       context.read<BusinessBloc>().add(
             GetProductsEvent(
               vendorId: business!.business!.userId!.toString(),
+              branchId: business!.branch!.id!.toString(),
               category: currentCategory,
             ),
           );
@@ -193,9 +195,12 @@ class _CheckoutScreenState extends State<CheckoutScreen>
                               onTap: () {
                                 context.read<BusinessBloc>().add(
                                       GetProductsEvent(
-                                          vendorId: business!.business!.userId!
-                                              .toString(),
-                                          category: "all"),
+                                        vendorId: business!.business!.userId!
+                                            .toString(),
+                                        category: "all",
+                                        branchId:
+                                            business!.branch!.id!.toString(),
+                                      ),
                                     );
                                 setState(() {
                                   currentCategory = "all";
@@ -223,10 +228,12 @@ class _CheckoutScreenState extends State<CheckoutScreen>
                                 onTap: () {
                                   context.read<BusinessBloc>().add(
                                         GetProductsEvent(
-                                            vendorId: business!
-                                                .business!.userId!
-                                                .toString(),
-                                            category: e.id.toString()),
+                                          vendorId: business!.business!.userId!
+                                              .toString(),
+                                          category: e.id.toString(),
+                                          branchId:
+                                              business!.branch!.id!.toString(),
+                                        ),
                                       );
                                   setState(
                                     () {

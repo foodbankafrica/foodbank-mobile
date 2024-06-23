@@ -12,8 +12,6 @@ import '../../core/utils/debouncer.dart';
 import '../../screens/user_account_screens/home/home_page/models/product_model.dart';
 import '../../screens/user_account_screens/home/my_bag_page/cache/cart_cache.dart';
 import '../../screens/user_account_screens/home/my_bag_page/models/bag_model.dart';
-import '../../screens/user_account_screens/home/my_bag_page/models/cart.dart'
-    show CartItems;
 import '../../screens/user_account_screens/my_bag_screen.dart';
 
 class AddFoodItemBottomSheet extends StatefulWidget {
@@ -403,7 +401,7 @@ class _AddFoodItemBottomSheetState extends State<AddFoodItemBottomSheet> {
                           context.read<BagBloc>().add(
                                 RemoveCartEvent(
                                   cartCache
-                                      .indexOf(widget.product!.id!.toString())!,
+                                      .indexOf(widget.product!.id!.toString()),
                                 ),
                               );
                         } else {

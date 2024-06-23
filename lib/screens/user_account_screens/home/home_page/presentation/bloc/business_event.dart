@@ -4,10 +4,10 @@ abstract class BusinessEvent {}
 
 class GetBusinessesEvent extends BusinessEvent {
   final String filteredBy;
-  final String? addressId;
+  final String addressId;
   GetBusinessesEvent({
     required this.filteredBy,
-    this.addressId,
+    required this.addressId,
   });
 }
 
@@ -28,10 +28,11 @@ class GetTransactionsEvent extends BusinessEvent {
 }
 
 class GetProductsEvent extends BusinessEvent {
-  final String vendorId;
+  final String vendorId, branchId;
   final String category;
   GetProductsEvent({
     required this.vendorId,
+    required this.branchId,
     required this.category,
   });
 }

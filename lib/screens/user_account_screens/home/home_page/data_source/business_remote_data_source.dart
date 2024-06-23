@@ -9,7 +9,7 @@ import '../models/transaction_model.dart';
 abstract class BusinessRemoteSource {
   Future<BusinessResponse> getBusinesses({
     required String filteredBy,
-    String? addressId,
+    required String addressId,
   });
   Future<BusinessResponse> getGuestBusinesses({
     required String address,
@@ -20,6 +20,7 @@ abstract class BusinessRemoteSource {
   Future<BusinessResponse> search(String searchTerm);
   Future<ProductResponse> getProducts({
     required String vendorId,
+    required String branchId,
     required String category,
   });
   Future<ProductResponse> guestProducts({
@@ -36,7 +37,7 @@ class BusinessRemoteSourceImpl implements BusinessRemoteSource {
   @override
   Future<BusinessResponse> getBusinesses({
     required String filteredBy,
-    String? addressId,
+    required String addressId,
   }) async {
     final res = await _apiClient.get(
         url: BusinessEndpoint.businesses(
@@ -52,10 +53,11 @@ class BusinessRemoteSourceImpl implements BusinessRemoteSource {
   @override
   Future<ProductResponse> getProducts({
     required String vendorId,
+    required String branchId,
     required String category,
   }) async {
     final res = await _apiClient.get(
-        url: BusinessEndpoint.products(vendorId, category));
+        url: BusinessEndpoint.products(vendorId, category, branchId));
     if (res.isSuccessful) {
       return ProductResponse.fromJson(res.data);
     }

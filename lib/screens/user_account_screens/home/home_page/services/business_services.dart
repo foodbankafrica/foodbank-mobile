@@ -12,7 +12,7 @@ import '../models/transaction_model.dart';
 abstract class BusinessService {
   TaskEither<Failure, BusinessResponse> getBusinesses({
     required String filteredBy,
-    String? addressId,
+    required String addressId,
   });
   TaskEither<Failure, BusinessResponse> getGuestBusinesses({
     required String address,
@@ -23,6 +23,7 @@ abstract class BusinessService {
   TaskEither<Failure, BusinessResponse> search(String searchTerm);
   TaskEither<Failure, ProductResponse> getProducts({
     required String vendorId,
+    required String branchId,
     required String category,
   });
   TaskEither<Failure, ProductResponse> guestProducts({
@@ -44,7 +45,7 @@ class BusinessServiceImpl extends BusinessService
   @override
   TaskEither<Failure, BusinessResponse> getBusinesses({
     required String filteredBy,
-    String? addressId,
+    required String addressId,
   }) {
     return TaskEither.tryCatch(
       () => checkInternetThenMakeRequest(_networkInfo, request: () async {
@@ -64,12 +65,14 @@ class BusinessServiceImpl extends BusinessService
   @override
   TaskEither<Failure, ProductResponse> getProducts({
     required String vendorId,
+    required String branchId,
     required String category,
   }) {
     return TaskEither.tryCatch(
       () => checkInternetThenMakeRequest(_networkInfo, request: () async {
         final res = await _businessRemoteSource.getProducts(
           vendorId: vendorId,
+          branchId: branchId,
           category: category,
         );
         return res;

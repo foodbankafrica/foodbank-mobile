@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:food_bank/config/extensions/custom_extensions.dart';
 import 'package:food_bank/config/routes.dart';
 import 'package:food_bank/core/providers.dart';
@@ -28,7 +29,7 @@ Future<void> main() async {
         DeviceOrientation.portraitUp,
         DeviceOrientation.portraitDown,
       ]);
-
+      await dotenv.load(fileName: ".env");
       await App.init();
       HttpOverrides.global = MyHttpOverrides();
       runApp(const MyApp());

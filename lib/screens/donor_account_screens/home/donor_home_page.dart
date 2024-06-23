@@ -38,7 +38,10 @@ class _DonorHomePageState extends State<DonorHomePage> {
   }
 
   Future<void> onRefresh() async {
-    context.read<BusinessBloc>().add(GetBusinessesEvent(filteredBy: ""));
+    context.read<BusinessBloc>().add(GetBusinessesEvent(
+          filteredBy: "",
+          addressId: addressCache.defaultAddressId,
+        ));
   }
 
   @override

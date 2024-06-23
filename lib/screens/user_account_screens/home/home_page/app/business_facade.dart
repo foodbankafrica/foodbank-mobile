@@ -14,7 +14,7 @@ class BusinessFacade {
 
   Future<Either<Failure, BusinessResponse>> getBusinesses({
     required String filteredBy,
-    String? addressId,
+    required String addressId,
   }) {
     return _businessService
         .getBusinesses(
@@ -41,12 +41,14 @@ class BusinessFacade {
 
   Future<Either<Failure, ProductResponse>> getProducts({
     required String vendorId,
+    required String branchId,
     required String category,
   }) {
     return _businessService
         .getProducts(
           vendorId: vendorId,
           category: category,
+          branchId: branchId,
         )
         .run();
   }

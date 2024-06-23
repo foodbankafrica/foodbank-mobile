@@ -292,9 +292,7 @@ class _RedeemCodesBottomSheetState extends State<RedeemCodesBottomSheet> {
                 ),
                 const SizedBox(height: 10),
                 ...widget.donation.redeemCodes!.map((redeemCode) {
-                  bool isRedeemed = DateTime.parse(redeemCode.createdAt!)
-                          .compareTo(DateTime.parse(redeemCode.createdAt!)) !=
-                      0;
+                  bool isRedeemed = redeemCode.isRedeemed.toString() == '1';
 
                   return Container(
                     padding: const EdgeInsets.all(10),

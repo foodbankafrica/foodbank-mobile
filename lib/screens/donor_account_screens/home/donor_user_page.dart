@@ -15,6 +15,8 @@ import '../../../core/cache/cache_store.dart';
 import '../../user_account_screens/auth/presentation/screens/signin_screen.dart';
 import '../../user_account_screens/home/user_page/presentation/screens/delivery_address.dart';
 import '../../user_account_screens/home/user_page/presentation/screens/kyc/kyc_screen.dart';
+import '../../user_account_screens/home/user_page/presentation/screens/kyc/verifications_screen.dart';
+import '../../user_account_screens/home/user_page/presentation/screens/support_screen.dart';
 
 class DonorUserPage extends StatelessWidget {
   static String name = 'donor-user-page';
@@ -41,7 +43,7 @@ class DonorUserPage extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Text(
-                  'Personal Info',
+                  'Our Support',
                   style: Theme.of(context)
                       .textTheme
                       .headlineMedium
@@ -51,11 +53,26 @@ class DonorUserPage extends StatelessWidget {
               const SizedBox(height: 20),
               const Divider(thickness: 0.5),
               UserOptions(
-                onTap: () {},
+                onTap: () {
+                  context.push(SupportScreen.route);
+                },
                 icon: 'info-circle',
                 title: 'Help And Support',
                 subtitle: 'Need Help?',
               ),
+              const Divider(thickness: 0.5),
+              const SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Text(
+                  'Personal Info',
+                  style: Theme.of(context)
+                      .textTheme
+                      .headlineMedium
+                      ?.copyWith(fontSize: 24),
+                ),
+              ),
+              const SizedBox(height: 20),
               const Divider(thickness: 0.5),
               UserOptions(
                 onTap: () {
@@ -86,7 +103,7 @@ class DonorUserPage extends StatelessWidget {
               const Divider(thickness: 0.5),
               UserOptions(
                 onTap: () {
-                  context.push(KycScreen.route);
+                  context.push(VerificationsScreen.route);
                 },
                 icon: 'approve',
                 title: 'Verify Identity',

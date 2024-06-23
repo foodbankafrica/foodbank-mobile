@@ -1,5 +1,7 @@
-class KycEndpoint {
-  static const String baseURL = "https://api-dev.foodbank.africa/m";
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-  static const String kyc = '$baseURL/v1/kyc';
+class KycEndpoint {
+  static String baseURL = dotenv.env['API_BASE_URL']!;
+
+  static String kyc = '$baseURL/m/v1/kyc';
 }

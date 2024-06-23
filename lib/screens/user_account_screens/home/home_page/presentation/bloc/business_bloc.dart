@@ -60,6 +60,7 @@ class BusinessBloc extends Bloc<BusinessEvent, BusinessState> {
     final failureOrSuccess = await _businessFacade.getProducts(
       vendorId: event.vendorId,
       category: event.category,
+      branchId: event.branchId,
     );
     failureOrSuccess.fold(
       (error) => emit(
