@@ -9,6 +9,9 @@ import 'package:food_bank/config/extensions/custom_extensions.dart';
 import 'package:food_bank/screens/user_account_screens/home/user_page/presentation/bloc/address_bloc/address_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../../../core/cache/cache_key.dart';
+import '../../../../../../core/cache/cache_store.dart';
+import '../../../../auth/presentation/screens/signin_screen.dart';
 import '../../cache/address_cache.dart';
 import '../../models/address_model.dart';
 
@@ -55,11 +58,27 @@ class _DeliveryAddressPageState extends State<DeliveryAddressPage> {
             context.toast(content: "Address deleted successful.");
             context.read<AddressBloc>().add(GetAddressEvent());
           } else if (state is DeletingAddressFail) {
-            context.buildError(state.error);
+            if (state.error.toLowerCase() == "unauthenticated") {
+              context.buildError(state.error);
+              CacheStore().remove(key: CacheKey.token);
+              Future.delayed(const Duration(seconds: 2), () {
+                context.go(SignInScreen.route);
+              });
+            } else {
+              context.buildError(state.error);
+            }
           } else if (state is AddingAddressSuccessful) {
             context.read<AddressBloc>().add(GetAddressEvent());
           } else if (state is MarkingDefaultAddressFail) {
-            context.buildError(state.error);
+            if (state.error.toLowerCase() == "unauthenticated") {
+              context.buildError(state.error);
+              CacheStore().remove(key: CacheKey.token);
+              Future.delayed(const Duration(seconds: 2), () {
+                context.go(SignInScreen.route);
+              });
+            } else {
+              context.buildError(state.error);
+            }
           } else if (state is MarkingDefaultAddressSuccessful) {
             context.read<AddressBloc>().add(GetAddressEvent());
           }
@@ -155,7 +174,15 @@ class _DeliveryAddressPageState extends State<DeliveryAddressPage> {
           listener: (context, state) {
             print(state);
             if (state is AddingAddressFail) {
-              context.buildError(state.error);
+              if (state.error.toLowerCase() == "unauthenticated") {
+                context.buildError(state.error);
+                CacheStore().remove(key: CacheKey.token);
+                Future.delayed(const Duration(seconds: 2), () {
+                  context.go(SignInScreen.route);
+                });
+              } else {
+                context.buildError(state.error);
+              }
             } else if (state is AddingAddressSuccessful) {
               context.pop();
               context.toast(content: "Address added successfully!");

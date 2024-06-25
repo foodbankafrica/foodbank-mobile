@@ -49,7 +49,12 @@ class _RedeemFoodBlockBottomSheetState
             HoldOnTightScreen.route,
           );
         } else if (state is RedeemingDonationFail) {
-          context.buildError(state.error);
+          if (state.error.toLowerCase() == "unauthenticated") {
+            context.buildError(state.error);
+            context.logout();
+          } else {
+            context.buildError(state.error);
+          }
         }
       },
       builder: (context, state) {

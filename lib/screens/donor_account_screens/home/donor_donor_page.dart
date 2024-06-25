@@ -88,7 +88,12 @@ class _DonationsState extends State<Donations> {
                 state.res.donations!.data!, nextPageKey);
           }
         } else if (state is GettingDonationsFail) {
-          context.buildError(state.error);
+          if (state.error.toLowerCase() == "unauthenticated") {
+            context.buildError(state.error);
+            context.logout();
+          } else {
+            context.buildError(state.error);
+          }
         }
       },
       builder: (context, state) {

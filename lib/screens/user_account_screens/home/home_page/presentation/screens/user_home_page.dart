@@ -15,12 +15,15 @@ import 'package:food_bank/screens/user_account_screens/home/home_page/presentati
 import 'package:food_bank/screens/user_account_screens/onboarding_screen.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../../../core/cache/cache_key.dart';
+import '../../../../../../core/cache/cache_store.dart';
 import '../../../../../../core/injections.dart';
 import '../../../../../../core/push_notification/device_info.dart';
 import '../../../../../../core/push_notification/notification_helper.dart';
 import '../../../../../../core/push_notification/push_notification_service.dart';
 import '../../../../auth/app/auth_facade.dart';
 import '../../../../auth/presentation/bloc/auth_bloc.dart';
+import '../../../../auth/presentation/screens/signin_screen.dart';
 import '../../../../checkout/presentation/screens/checkout_screen.dart';
 import '../../../my_bag_page/cache/cart_cache.dart';
 import '../../../my_bag_page/presentation/bloc/bag_bloc.dart';
@@ -148,6 +151,17 @@ class _HomePageState extends State<HomePage> {
                           if (state is GettingAddressesSuccessful) {
                             addressCache.addresses =
                                 state.addressesResponse.addresses!;
+                          } else if (state is GettingAddressesFail) {
+                            if (state.error.toLowerCase() ==
+                                "unauthenticated") {
+                              context.buildError(state.error);
+                              CacheStore().remove(key: CacheKey.token);
+                              Future.delayed(const Duration(seconds: 2), () {
+                                context.go(SignInScreen.route);
+                              });
+                            } else {
+                              context.buildError(state.error);
+                            }
                           }
                         },
                         builder: (context, state) => Column(
@@ -263,7 +277,15 @@ class _HomePageState extends State<HomePage> {
                           kyc: state.user.kyc,
                         );
                       } else if (state is GettingMeFail) {
-                        // context.go(SignInScreen.route);
+                        if (state.error.toLowerCase() == "unauthenticated") {
+                          context.buildError(state.error);
+                          CacheStore().remove(key: CacheKey.token);
+                          Future.delayed(const Duration(seconds: 2), () {
+                            context.go(SignInScreen.route);
+                          });
+                        } else {
+                          context.buildError(state.error);
+                        }
                       }
                     },
                     builder: (context, state) {
@@ -482,6 +504,13 @@ class _BusinessesWidgetState extends State<BusinessesWidget> {
           setState(() {
             businesses = businessCache.businesses;
           });
+        } else if (state is GettingBusinessesFail) {
+          if (state.error.toLowerCase() == "unauthenticated") {
+            context.buildError(state.error);
+            context.logout();
+          } else {
+            context.buildError(state.error);
+          }
         }
       },
       builder: (context, state) {

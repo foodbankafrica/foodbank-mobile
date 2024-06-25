@@ -95,10 +95,16 @@ class FoodBankBottomSheetAppBar extends StatelessWidget {
 }
 
 class OpenElevatedButton extends StatelessWidget {
-  const OpenElevatedButton({super.key, this.child, required this.onPressed});
+  const OpenElevatedButton({
+    super.key,
+    this.child,
+    required this.onPressed,
+    this.borderRadius = 8,
+  });
 
   final Widget? child;
   final Function()? onPressed;
+  final double borderRadius;
 
   @override
   Widget build(BuildContext context) {
@@ -108,7 +114,7 @@ class OpenElevatedButton extends StatelessWidget {
         height: 55,
         width: double.infinity,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(borderRadius),
           border: Border.all(
             color: const Color(0xFFCC400C),
           ),
@@ -129,6 +135,7 @@ class CustomButton extends StatelessWidget {
     this.child,
     this.isLoading = false,
     this.color,
+    this.borderRadius = 8,
   }) : assert(
           text != null || child != null,
           "Cannot have both text and child",
@@ -139,13 +146,18 @@ class CustomButton extends StatelessWidget {
   final Function()? onTap;
   final bool isLoading;
   final Color? color;
+  final double borderRadius;
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
         onPressed: isLoading ? null : onTap,
-        style: ElevatedButton.styleFrom(backgroundColor: color),
+        style: ElevatedButton.styleFrom(
+            backgroundColor: color,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(borderRadius),
+            )),
         child: isLoading ? const CustomIndicator() : (child ?? Text(text!)),
       ),
     );
@@ -203,6 +215,14 @@ class _AvailableBalanceState extends State<AvailableBalance> {
             virtualAccounts: state.user.virtualAccounts,
             kyc: state.user.kyc,
           );
+        }
+        if (state is GettingMeFail) {
+          if (state.error.toLowerCase() == "unauthenticated") {
+            context.buildError(state.error);
+            context.logout();
+          } else {
+            context.buildError(state.error);
+          }
         }
       },
       builder: (context, state) => Container(

@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:food_bank/common/user_bottom_nav_bar.dart';
 import 'package:food_bank/common/widgets.dart';
+import 'package:food_bank/config/extensions/custom_extensions.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../screens/user_account_screens/home/my_bag_page/models/order_model.dart';
@@ -106,6 +107,20 @@ class _ThreeStepOrderInProgressBottomSheetState
                   content: RateOrder(),
                 );
               });
+        } else if (state is ConfirmingOrderFail) {
+          if (state.error.toLowerCase() == "unauthenticated") {
+            context.buildError(state.error);
+            context.logout();
+          } else {
+            context.buildError(state.error);
+          }
+        } else if (state is GettingOrderFail) {
+          if (state.error.toLowerCase() == "unauthenticated") {
+            context.buildError(state.error);
+            context.logout();
+          } else {
+            context.buildError(state.error);
+          }
         }
       },
       builder: (context, state) {

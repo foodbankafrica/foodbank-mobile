@@ -124,7 +124,12 @@ class _EditProfileInfoPageState extends State<EditProfileInfoPage> {
               if (state is UpdatingAccountSuccessful) {
                 context.toast(content: "Profile updated successfully");
               } else if (state is UpdatingAccountFail) {
-                context.buildError(state.error);
+                if (state.error.toLowerCase() == "unauthenticated") {
+                  context.buildError(state.error);
+                  context.logout();
+                } else {
+                  context.buildError(state.error);
+                }
               }
             },
             builder: (context, state) => Padding(

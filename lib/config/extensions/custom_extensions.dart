@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logger/logger.dart';
 
+import '../../core/cache/cache_key.dart';
+import '../../core/cache/cache_store.dart';
+import '../../screens/user_account_screens/auth/presentation/screens/signin_screen.dart';
+
 extension EXContext on BuildContext {
   buildError(String content) {
     return showDialog(
@@ -58,37 +62,31 @@ extension EXContext on BuildContext {
       SnackBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        content: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 10,
-              ),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.grey,
-                    blurRadius: 2,
-                    offset: Offset(0, 0),
-                  ),
-                ],
-              ),
-              child: Text(
-                content,
-                style: Theme.of(this)
-                    .textTheme
-                    .bodyMedium
-                    ?.copyWith(fontSize: 14, fontWeight: FontWeight.w500),
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ],
+        duration: const Duration(milliseconds: 800),
+        content: Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 10,
+          ),
+          child: Text(
+            content,
+            style: Theme.of(this).textTheme.bodyMedium?.copyWith(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black,
+                ),
+            textAlign: TextAlign.center,
+          ),
         ),
       ),
     );
+  }
+
+  logout() {
+    CacheStore().remove(key: CacheKey.token);
+    Future.delayed(const Duration(seconds: 2), () {
+      go(SignInScreen.route);
+    });
   }
 }
 

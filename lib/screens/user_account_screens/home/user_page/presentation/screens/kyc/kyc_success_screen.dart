@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:food_bank/config/extensions/custom_extensions.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../../../common/success_screen.dart';
@@ -35,6 +36,13 @@ class _KycSuccessScreenState extends State<KycSuccessScreen> {
             virtualAccounts: state.user.virtualAccounts,
             kyc: state.user.kyc,
           );
+        } else if (state is GettingMeFail) {
+          if (state.error.toLowerCase() == "unauthenticated") {
+            context.buildError(state.error);
+            context.logout();
+          } else {
+            context.buildError(state.error);
+          }
         }
       },
       builder: (context, state) => SuccessScreen(

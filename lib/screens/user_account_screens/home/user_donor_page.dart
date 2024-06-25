@@ -13,10 +13,36 @@ import 'home_page/presentation/screens/redeem_screen.dart';
 import 'my_bag_page/cache/donation_cache.dart';
 import 'my_bag_page/models/donation_model.dart';
 
-class DonorPage extends StatelessWidget {
+class DonorPage extends StatefulWidget {
   static String name = 'donor-page';
   static String route = '/donor-page';
   const DonorPage({super.key});
+
+  @override
+  State<DonorPage> createState() => _DonorPageState();
+}
+
+class _DonorPageState extends State<DonorPage> {
+  bool isSelected1 = true;
+  bool isSelected2 = false;
+
+  void changeState1() {
+    setState(() {
+      isSelected1 = true;
+    });
+    if (isSelected1 == true) {
+      isSelected2 = false;
+    }
+  }
+
+  void changeState2() {
+    setState(() {
+      isSelected2 = true;
+    });
+    if (isSelected2 == true) {
+      isSelected1 = false;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +88,76 @@ class DonorPage extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 25),
+            const SizedBox(height: 10),
+            Center(
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(64),
+                  color: const Color(0xFFEEF0F4),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          changeState1();
+                        },
+                        child: Container(
+                          height: 40,
+                          width: 108,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(32),
+                            color: isSelected1 == true ? Colors.black : null,
+                          ),
+                          child: Center(
+                            child: Text(
+                              'Public Donation',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(
+                                    color: isSelected1 == true
+                                        ? Colors.white
+                                        : Colors.black,
+                                  ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          changeState2();
+                        },
+                        child: Container(
+                          height: 40,
+                          width: 108,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(32),
+                            color: isSelected2 == true ? Colors.black : null,
+                          ),
+                          child: Center(
+                            child: Text(
+                              'My Private',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(
+                                    color: isSelected2 == true
+                                        ? Colors.white
+                                        : Colors.black,
+                                  ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 15),
             const Donations(),
           ],
         ),
@@ -117,7 +212,12 @@ class _DonationsState extends State<Donations> {
                 state.res.donations!.data!, nextPageKey);
           }
         } else if (state is GettingDonationsFail) {
-          context.buildError(state.error);
+          if (state.error.toLowerCase() == "unauthenticated") {
+            context.buildError(state.error);
+            context.logout();
+          } else {
+            context.buildError(state.error);
+          }
         }
       },
       builder: (context, state) {

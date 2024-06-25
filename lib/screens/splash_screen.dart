@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:food_bank/config/extensions/custom_extensions.dart';
 import 'package:food_bank/screens/user_account_screens/auth/cache/user_cache.dart';
 import 'package:food_bank/screens/user_account_screens/auth/presentation/bloc/auth_bloc.dart';
-import 'package:food_bank/screens/user_account_screens/onboarding_screen.dart';
 import 'package:go_router/go_router.dart';
 
 import '../common/donor_bottom_nav_bar.dart';
@@ -43,7 +43,12 @@ class _SplashScreenState extends State<SplashScreen> {
             context.go(DonorFoodBankBottomNavigator.route);
           }
         } else if (state is GettingMeFail) {
-          context.go(OnboardingScreen.route);
+          if (state.error.toLowerCase() == "unauthenticated") {
+            context.buildError(state.error);
+            context.logout();
+          } else {
+            context.buildError(state.error);
+          }
         }
       },
       builder: (context, state) => Scaffold(

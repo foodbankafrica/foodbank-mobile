@@ -7,7 +7,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:food_bank/common/widgets.dart';
 import 'package:food_bank/config/extensions/custom_extensions.dart';
+import 'package:food_bank/core/utils/helper_func.dart';
 import 'package:food_bank/screens/user_account_screens/home/user_page/presentation/bloc/address_bloc/address_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_places_flutter/google_places_flutter.dart';
 import 'package:google_places_flutter/model/prediction.dart';
 
@@ -32,6 +34,7 @@ class EnterDeliveryAddressBottomSheet extends StatefulWidget {
 class _EnterDeliveryAddressBottomSheetState
     extends State<EnterDeliveryAddressBottomSheet> {
   final TextEditingController addressController = TextEditingController();
+  double? latitude, longitude;
 
   @override
   void dispose() {
@@ -43,7 +46,14 @@ class _EnterDeliveryAddressBottomSheetState
   Widget build(BuildContext context) {
     return BlocConsumer<AddressBloc, AddressState>(
       listener: (context, state) {
-        print(state);
+        if (state is AddingAddressFail) {
+          if (state.error.toLowerCase() == "unauthenticated") {
+            context.buildError(state.error);
+            context.logout();
+          } else {
+            context.buildError(state.error);
+          }
+        }
       },
       builder: (context, state) => Column(
         mainAxisSize: MainAxisSize.max,
@@ -59,6 +69,7 @@ class _EnterDeliveryAddressBottomSheetState
               textEditingController: addressController,
               googleAPIKey: dotenv.env['GOOGLE_MAP_API_KEY'] ?? '',
               inputDecoration: InputDecoration(
+                hintText: "Enter your full delivery address",
                 prefixIcon: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -84,11 +95,10 @@ class _EnterDeliveryAddressBottomSheetState
                 setState(
                   () {
                     widget.controller!.text = prediction.description ?? '';
+                    latitude = double.parse(prediction.lat!);
+                    longitude = double.parse(prediction.lng!);
                   },
                 );
-                final latitude = double.parse(prediction.lat!);
-                final longitude = double.parse(prediction.lng!);
-                widget.onAdd!(latitude, longitude);
               },
               itemClick: (Prediction prediction) {
                 addressController.text = prediction.description!;
@@ -98,7 +108,6 @@ class _EnterDeliveryAddressBottomSheetState
                   ),
                 );
               },
-              // if we want to make custom list item builder
               itemBuilder: (context, index, Prediction prediction) {
                 return Container(
                   padding: const EdgeInsets.all(10),
@@ -122,12 +131,59 @@ class _EnterDeliveryAddressBottomSheetState
                   ),
                 );
               },
-              // if you want to add seperator between list items
               seperatedBuilder: const Divider(),
-              // want to show close icon
               isCrossBtnShown: true,
-              // optional container padding
               containerHorizontalPadding: 10,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: InkWell(
+              onTap: () async {
+                try {
+                  final myCurrentLocation = await useCurrentLocation();
+                  if (myCurrentLocation.$1.isNotEmpty) {
+                    setState(
+                      () {
+                        widget.controller!.text = myCurrentLocation.$1;
+                        latitude = myCurrentLocation.$2;
+                        longitude = myCurrentLocation.$3;
+                      },
+                    );
+                    widget.onAdd!(latitude!, longitude!);
+                    // context.pop();
+                  }
+                } catch (e) {
+                  context.buildError("Enter a valid location.");
+                }
+              },
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Theme.of(context).primaryColor,
+                    width: 0.8,
+                  ),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.location_on),
+                    const SizedBox(
+                      width: 7,
+                    ),
+                    Expanded(
+                      child: Text(
+                        "Use current location",
+                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black,
+                            ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
             ),
           ),
           const Spacer(),
@@ -150,18 +206,14 @@ class _EnterDeliveryAddressBottomSheetState
                       try {
                         List<Location> locations =
                             await locationFromAddress(addressController.text);
-
-                        print(
-                            "${locations.first.latitude}${locations.first.longitude}");
                         if (locations.isNotEmpty) {
                           setState(
                             () {
                               widget.controller!.text = addressController.text;
+                              latitude = locations.first.latitude;
+                              longitude = locations.first.longitude;
                             },
                           );
-                          final latitude = locations.first.latitude;
-                          final longitude = locations.first.longitude;
-                          widget.onAdd!(latitude, longitude);
                         }
                       } catch (e) {
                         context.buildError("Enter a valid location.");
@@ -197,6 +249,14 @@ class _EnterDeliveryAddressBottomSheetState
                         ],
                       ),
                     ),
+                  ),
+                  const SizedBox(height: 10),
+                  CustomButton(
+                    isLoading: state is AddingAddress,
+                    onTap: () {
+                      widget.onAdd!(latitude!, longitude!);
+                    },
+                    text: "Submit Address",
                   ),
                 ],
               ),

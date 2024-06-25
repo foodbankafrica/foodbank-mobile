@@ -4,11 +4,12 @@ import 'package:food_bank/common/text_fields.dart';
 import 'package:food_bank/common/widgets.dart';
 import 'package:food_bank/config/extensions/custom_extensions.dart';
 import 'package:food_bank/screens/user_account_screens/checkout/presentation/bloc/checkout_bloc.dart';
-import 'package:food_bank/screens/user_account_screens/home/home_page/presentation/screens/qr_scanner_screen.dart';
 import 'package:go_router/go_router.dart';
-import 'package:qr_code_scanner/qr_code_scanner.dart';
 
 import '../../../../../../common/bottom_sheets/redeem_food_block_sheet.dart';
+import '../../../../../../core/cache/cache_key.dart';
+import '../../../../../../core/cache/cache_store.dart';
+import '../../../../auth/presentation/screens/signin_screen.dart';
 
 class RedeemScreen extends StatefulWidget {
   static String name = 'redeem';
@@ -20,7 +21,6 @@ class RedeemScreen extends StatefulWidget {
 }
 
 class _RedeemScreenState extends State<RedeemScreen> {
-  Barcode? result;
   TextEditingController controller = TextEditingController();
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
 
@@ -76,7 +76,15 @@ class _RedeemScreenState extends State<RedeemScreen> {
                             },
                           );
                         } else if (state is SearchingForDonationFail) {
-                          context.buildError(state.error);
+                          if (state.error.toLowerCase() == "unauthenticated") {
+                            context.buildError(state.error);
+                            CacheStore().remove(key: CacheKey.token);
+                            Future.delayed(const Duration(seconds: 2), () {
+                              context.go(SignInScreen.route);
+                            });
+                          } else {
+                            context.buildError(state.error);
+                          }
                         }
                       },
                       builder: (context, state) => CustomButton(
@@ -91,25 +99,25 @@ class _RedeemScreenState extends State<RedeemScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 20),
-                Center(
-                  child: Text(
-                    "OR",
-                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 18,
-                          color: Colors.black,
-                        ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                CustomButton(
-                  onTap: () {
-                    context.push(QRScannerScreen.route);
-                  },
-                  text: "Scan QR Code",
-                ),
+                // const SizedBox(height: 20),
+                // Center(
+                //   child: Text(
+                //     "OR",
+                //     style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                //           fontWeight: FontWeight.w500,
+                //           fontSize: 18,
+                //           color: Colors.black,
+                //         ),
+                //     textAlign: TextAlign.center,
+                //   ),
+                // ),
+                // const SizedBox(height: 20),
+                // CustomButton(
+                //   onTap: () {
+                //     context.push(QRScannerScreen.route);
+                //   },
+                //   text: "Scan QR Code",
+                // ),
               ],
             ),
           ),

@@ -6,8 +6,11 @@ import 'package:food_bank/screens/user_account_screens/home/home_page/presentati
 import 'package:go_router/go_router.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
+import '../../../../../../core/cache/cache_key.dart';
+import '../../../../../../core/cache/cache_store.dart';
 import '../../../../auth/cache/user_cache.dart';
 import '../../../../auth/presentation/bloc/auth_bloc.dart';
+import '../../../../auth/presentation/screens/signin_screen.dart';
 import '../../../home_page/models/transaction_model.dart';
 import 'transaction_summary_screen.dart';
 
@@ -68,6 +71,16 @@ class _WalletPageState extends State<WalletPage> {
               setState(() {
                 transactionResponse = state.data;
               });
+            } else if (state is GetTransactionsFail) {
+              if (state.error.toLowerCase() == "unauthenticated") {
+                context.buildError(state.error);
+                CacheStore().remove(key: CacheKey.token);
+                Future.delayed(const Duration(seconds: 2), () {
+                  context.go(SignInScreen.route);
+                });
+              } else {
+                context.buildError(state.error);
+              }
             }
           },
           builder: (context, state) {

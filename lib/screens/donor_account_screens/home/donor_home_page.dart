@@ -2,10 +2,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:food_bank/config/extensions/custom_extensions.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../common/bottom_sheets/delivery_address_sheet.dart';
+import '../../../core/cache/cache_key.dart';
+import '../../../core/cache/cache_store.dart';
 import '../../user_account_screens/auth/cache/user_cache.dart';
 import '../../user_account_screens/auth/presentation/bloc/auth_bloc.dart';
+import '../../user_account_screens/auth/presentation/screens/signin_screen.dart';
 import '../../user_account_screens/home/home_page/presentation/bloc/business_bloc.dart';
 import '../../user_account_screens/home/home_page/presentation/screens/search_screen.dart';
 import '../../user_account_screens/home/home_page/presentation/screens/user_home_page.dart';
@@ -64,6 +69,17 @@ class _DonorHomePageState extends State<DonorHomePage> {
                           if (state is GettingAddressesSuccessful) {
                             addressCache.addresses =
                                 state.addressesResponse.addresses!;
+                          } else if (state is GettingAddressesFail) {
+                            if (state.error.toLowerCase() ==
+                                "unauthenticated") {
+                              context.buildError(state.error);
+                              CacheStore().remove(key: CacheKey.token);
+                              Future.delayed(const Duration(seconds: 2), () {
+                                context.go(SignInScreen.route);
+                              });
+                            } else {
+                              context.buildError(state.error);
+                            }
                           }
                         },
                         builder: (context, state) {
@@ -106,12 +122,28 @@ class _DonorHomePageState extends State<DonorHomePage> {
                           ),
                           InkWell(
                             onTap: () {
-                              context.read<BusinessBloc>().add(
-                                    GetBusinessesEvent(
-                                      filteredBy: "",
-                                      addressId: addressCache.defaultAddressId,
-                                    ),
-                                  );
+                              if (userCache.isAuthenticated) {
+                                showModalBottomSheet(
+                                  context: context,
+                                  isScrollControlled: true,
+                                  isDismissible: false,
+                                  useSafeArea: true,
+                                  builder: (context) {
+                                    return DeliveryAddressBottomSheet(
+                                      onSelected: (address) {
+                                        context.read<BusinessBloc>().add(
+                                              GetBusinessesEvent(
+                                                filteredBy: "",
+                                                addressId:
+                                                    address.id.toString(),
+                                              ),
+                                            );
+                                        context.pop();
+                                      },
+                                    );
+                                  },
+                                );
+                              }
                             },
                             child: Container(
                               height: 24,
@@ -152,7 +184,15 @@ class _DonorHomePageState extends State<DonorHomePage> {
                           kyc: state.user.kyc,
                         );
                       } else if (state is GettingMeFail) {
-                        // context.go(SignInScreen.route);
+                        if (state.error.toLowerCase() == "unauthenticated") {
+                          context.buildError(state.error);
+                          CacheStore().remove(key: CacheKey.token);
+                          Future.delayed(const Duration(seconds: 2), () {
+                            context.go(SignInScreen.route);
+                          });
+                        } else {
+                          context.buildError(state.error);
+                        }
                       }
                     },
                     builder: (context, state) {

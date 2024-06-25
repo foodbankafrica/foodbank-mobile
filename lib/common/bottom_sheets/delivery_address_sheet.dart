@@ -19,10 +19,10 @@ class DeliveryAddressBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final AddressCache addressCache = AddressCache.instance;
     return Column(
-      // mainAxisSize: MainAxisSize.min,
+      mainAxisSize: MainAxisSize.min,
       children: [
         const FoodBankBottomSheetAppBar(
-          title: 'Delivery Location',
+          title: 'My Delivery Location Address',
         ),
         const Divider(),
         const SizedBox(height: 10),
@@ -44,7 +44,10 @@ class DeliveryAddressBottomSheet extends StatelessWidget {
                         children: [
                           Container(
                             width: double.infinity,
-                            padding: const EdgeInsets.all(10),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 15,
+                              vertical: 20,
+                            ),
                             decoration: BoxDecoration(
                               color: Colors.grey.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(12),

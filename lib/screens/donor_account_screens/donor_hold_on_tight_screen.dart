@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:food_bank/config/extensions/custom_extensions.dart';
 import 'package:food_bank/screens/donor_account_screens/donation_created_screen.dart';
 import 'package:go_router/go_router.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 
+import '../../core/cache/cache_key.dart';
+import '../../core/cache/cache_store.dart';
+import '../user_account_screens/auth/presentation/screens/signin_screen.dart';
 import '../user_account_screens/checkout/presentation/bloc/checkout_bloc.dart';
 import '../user_account_screens/home/my_bag_page/cache/donation_cache.dart';
 
@@ -48,6 +52,16 @@ class _DonorHoldOnTightScreenState extends State<DonorHoldOnTightScreen>
         listener: (context, state) {
           if (state is GettingDonationsSuccessful) {
             donationCache.donations = state.res.donations!.data!;
+          } else if (state is GettingDonationsFail) {
+            if (state.error.toLowerCase() == "unauthenticated") {
+              context.buildError(state.error);
+              CacheStore().remove(key: CacheKey.token);
+              Future.delayed(const Duration(seconds: 2), () {
+                context.go(SignInScreen.route);
+              });
+            } else {
+              context.buildError(state.error);
+            }
           }
         },
         builder: (context, state) {

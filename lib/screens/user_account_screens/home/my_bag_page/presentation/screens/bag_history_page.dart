@@ -11,6 +11,9 @@ import 'package:go_router/go_router.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 import '../../../../../../common/bottom_sheets/three_step_order_in_progress_sheet.dart';
+import '../../../../../../core/cache/cache_key.dart';
+import '../../../../../../core/cache/cache_store.dart';
+import '../../../../auth/presentation/screens/signin_screen.dart';
 import '../../cache/order_cache.dart';
 
 class BagHistoryPage extends StatefulWidget {
@@ -89,6 +92,16 @@ class _BagHistoryPageState extends State<BagHistoryPage> {
           if (state is GettingOrdersSuccessful) {
             orderCache.orders = state.orders.orders!.data!;
             _setOrder(state.orders.orders!.data!);
+          } else if (state is GettingOrdersFail) {
+            if (state.error.toLowerCase() == "unauthenticated") {
+              context.buildError(state.error);
+              CacheStore().remove(key: CacheKey.token);
+              Future.delayed(const Duration(seconds: 2), () {
+                context.go(SignInScreen.route);
+              });
+            } else {
+              context.buildError(state.error);
+            }
           }
         },
         builder: (context, state) {
@@ -270,6 +283,13 @@ class _MyReoccurringOrdersState extends State<MyReoccurringOrders> {
             final nextPageKey = (state.orders.orders!.currentPage ?? 0) + 1;
             _pagingController.appendPage(
                 state.orders.orders!.data!, nextPageKey);
+          }
+        } else if (state is GettingOrdersFail) {
+          if (state.error.toLowerCase() == "unauthenticated") {
+            context.buildError(state.error);
+            context.logout();
+          } else {
+            context.buildError(state.error);
           }
         }
       },
@@ -501,6 +521,13 @@ class _MyOnGoingBagsState extends State<MyOnGoingBags> {
             final nextPageKey = (state.orders.orders!.currentPage ?? 0) + 1;
             _pagingController.appendPage(
                 state.orders.orders!.data!, nextPageKey);
+          }
+        } else if (state is GettingOrdersFail) {
+          if (state.error.toLowerCase() == "unauthenticated") {
+            context.buildError(state.error);
+            context.logout();
+          } else {
+            context.buildError(state.error);
           }
         }
       },

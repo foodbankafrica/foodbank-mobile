@@ -204,12 +204,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               labelText: 'Organization Name (Optional)',
                               hintText: 'Enter your organization name',
                               controller: organizationNameController,
-                              validator: (String? value) {
-                                if (value!.isEmpty && isSelected2 == true) {
-                                  return 'Required';
-                                }
-                                return null;
-                              },
                             ),
                             const SizedBox(height: 5),
                             Text(

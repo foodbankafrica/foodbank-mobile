@@ -16,7 +16,10 @@ import 'package:go_router/go_router.dart';
 
 import '../../common/bottom_sheets/delivery_location_sheet.dart';
 import '../../common/bottom_sheets/enter_delivery_address_sheet.dart';
+import '../../core/cache/cache_key.dart';
+import '../../core/cache/cache_store.dart';
 import 'auth/cache/user_cache.dart';
+import 'auth/presentation/screens/signin_screen.dart';
 import 'empty_wallet_message_screen.dart';
 import 'home/home_page/cache/business_cache.dart';
 import 'home/my_bag_page/cache/cart_cache.dart';
@@ -184,9 +187,7 @@ class _MyBagScreenState extends State<MyBagScreen> {
   Widget build(BuildContext context) {
     return BlocConsumer<BagBloc, BagState>(
       listener: (context, state) {
-        print("User add bag $state");
         if (state is GettingCartSuccessful) {
-          // cartCache.carts = state.carts;
           calculateTotal();
           setState(() {
             isLoading = false;
@@ -1148,7 +1149,13 @@ class _MyBagScreenState extends State<MyBagScreen> {
                           );
                         }
                       } else if (state is CheckingOutFail) {
-                        if (state.error.toLowerCase() ==
+                        if (state.error.toLowerCase() == "unauthenticated") {
+                          context.buildError(state.error);
+                          CacheStore().remove(key: CacheKey.token);
+                          Future.delayed(const Duration(seconds: 2), () {
+                            context.go(SignInScreen.route);
+                          });
+                        } else if (state.error.toLowerCase() ==
                             "insufficient balance") {
                           context.push(EmptyWalletMessageScreen.route);
                         } else {
@@ -1174,6 +1181,7 @@ class _MyBagScreenState extends State<MyBagScreen> {
                             children: [
                               Expanded(
                                 child: CustomButton(
+                                  borderRadius: 30,
                                   onTap: () {
                                     if ((isSelected1 ||
                                             (selectedSubDeliveryType ==
@@ -1278,6 +1286,7 @@ class _MyBagScreenState extends State<MyBagScreen> {
                               const SizedBox(width: 20),
                               Expanded(
                                 child: OpenElevatedButton(
+                                  borderRadius: 30,
                                   onPressed: () {
                                     if ((isSelected1 ||
                                             (selectedSubDeliveryType ==
@@ -1944,7 +1953,9 @@ class _SingleCartBagState extends State<SingleCartBag> {
                                   id: widget.cart.id,
                                   vendorId: widget.cart.vendorId,
                                   name: widget.cart.name,
-                                  quantity: widget.cart.quantity! - 1,
+                                  quantity: widget.cart.quantity! == 1
+                                      ? widget.cart.quantity
+                                      : widget.cart.quantity! - 1,
                                 ),
                               ),
                             );

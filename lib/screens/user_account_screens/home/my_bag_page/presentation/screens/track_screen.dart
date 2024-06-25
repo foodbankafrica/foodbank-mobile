@@ -4,8 +4,12 @@ import 'package:food_bank/common/text_fields.dart';
 import 'package:food_bank/common/widgets.dart';
 import 'package:food_bank/config/extensions/custom_extensions.dart';
 import 'package:food_bank/screens/user_account_screens/checkout/presentation/bloc/checkout_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../../../common/bottom_sheets/redeem_food_block_sheet.dart';
+import '../../../../../../core/cache/cache_key.dart';
+import '../../../../../../core/cache/cache_store.dart';
+import '../../../../auth/presentation/screens/signin_screen.dart';
 
 class TrackOrderScreen extends StatefulWidget {
   static String name = 'track-order';
@@ -65,7 +69,15 @@ class _TrackOrderScreenState extends State<TrackOrderScreen> {
                             },
                           );
                         } else if (state is SearchingForDonationFail) {
-                          context.buildError(state.error);
+                          if (state.error.toLowerCase() == "unauthenticated") {
+                            context.buildError(state.error);
+                            CacheStore().remove(key: CacheKey.token);
+                            Future.delayed(const Duration(seconds: 2), () {
+                              context.go(SignInScreen.route);
+                            });
+                          } else {
+                            context.buildError(state.error);
+                          }
                         }
                       },
                       builder: (context, state) => CustomButton(

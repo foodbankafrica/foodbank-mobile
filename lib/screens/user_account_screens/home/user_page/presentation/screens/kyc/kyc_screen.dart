@@ -4,6 +4,9 @@ import 'package:food_bank/common/text_fields.dart';
 import 'package:food_bank/common/widgets.dart';
 import 'package:food_bank/config/extensions/custom_extensions.dart';
 import 'package:food_bank/screens/user_account_screens/home/user_page/presentation/bloc/kyc_bloc/kyc_bloc.dart';
+import '../../../../../../../core/cache/cache_key.dart';
+import '../../../../../../../core/cache/cache_store.dart';
+import '../../../../../auth/presentation/screens/signin_screen.dart';
 import 'kyc_success_screen.dart';
 import 'package:go_router/go_router.dart';
 
@@ -246,7 +249,17 @@ class _KycScreenState extends State<KycScreen> {
                             BlocConsumer<KycBloc, KycState>(
                               listener: (context, state) {
                                 if (state is VerificationFail) {
-                                  context.buildError(state.error);
+                                  if (state.error.toLowerCase() ==
+                                      "unauthenticated") {
+                                    context.buildError(state.error);
+                                    CacheStore().remove(key: CacheKey.token);
+                                    Future.delayed(const Duration(seconds: 2),
+                                        () {
+                                      context.go(SignInScreen.route);
+                                    });
+                                  } else {
+                                    context.buildError(state.error);
+                                  }
                                 } else if (state is VerificationSuccessful) {
                                   context.push(KycSuccessScreen.route);
                                 }

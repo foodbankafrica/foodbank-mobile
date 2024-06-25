@@ -11,7 +11,10 @@ import 'package:food_bank/screens/donor_account_screens/donor_hold_on_tight_scre
 import 'package:go_router/go_router.dart';
 
 import '../../common/bottom_sheets/delivery_location_sheet.dart';
+import '../../core/cache/cache_key.dart';
+import '../../core/cache/cache_store.dart';
 import '../user_account_screens/auth/cache/user_cache.dart';
+import '../user_account_screens/auth/presentation/screens/signin_screen.dart';
 import '../user_account_screens/checkout/presentation/bloc/checkout_bloc.dart';
 import '../user_account_screens/empty_wallet_message_screen.dart';
 import '../user_account_screens/home/home_page/cache/business_cache.dart';
@@ -509,206 +512,290 @@ class _DonorMyBagScreenState extends State<DonorMyBagScreen> {
                         extra: state.res.donation,
                       );
                     } else if (state is CreatingDonationFail) {
-                      if (state.error.toLowerCase() == "insufficient balance") {
+                      if (state.error.toLowerCase() == "unauthenticated") {
+                        context.buildError(state.error);
+                        CacheStore().remove(key: CacheKey.token);
+                        Future.delayed(const Duration(seconds: 2), () {
+                          context.go(SignInScreen.route);
+                        });
+                      } else if (state.error.toLowerCase() ==
+                          "insufficient balance") {
                         context.push(EmptyWalletMessageScreen.route);
                       } else {
                         context.buildError(state.error);
                       }
                     }
                   },
-                  builder: (context, state) => ElevatedButton(
-                    onPressed: () {
-                      if (numberOfDonee.text.isEmpty ||
-                          numberOfDonee.text == "Others") {
-                        return;
-                      }
-
-                      if (!value2 && deliveryAddressController.text.isEmpty) {
-                        context.buildError(
-                            "Nearest Delivery Location is required.");
-                        return;
-                      }
-
-                      if ((num.parse(userCache.wallet.balance!) - totalAmount)
-                          .toString()
-                          .startsWith("-")) {
-                        context.push(EmptyWalletMessageScreen.route);
-                        return;
-                      }
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            backgroundColor: Colors.transparent,
-                            contentPadding: const EdgeInsets.all(0),
-                            insetPadding: const EdgeInsets.all(0),
-                            content: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(20),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "Summary",
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .headlineSmall
-                                            ?.copyWith(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w600,
-                                              color: const Color(0xFF000000),
-                                            ),
-                                      ),
-                                      const Divider(
-                                        color: Colors.grey,
-                                      ),
-                                      const SizedBox(height: 5),
-                                      ...cartCache.carts.map((cart) {
-                                        return Builder(builder: (context) {
-                                          return KeyPairValue(
-                                            "${cart..name}\n₦${cart..price.toString().formatAmount()}",
-                                            "Per person \nx${cart.quantity} QTY",
-                                            boldTitle: true,
-                                          );
-                                        });
-                                      }),
-                                      const SizedBox(height: 10),
-                                      Text(
-                                        "Payment Summary",
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .headlineSmall
-                                            ?.copyWith(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w700,
-                                              color: const Color(0xFF000000),
-                                            ),
-                                      ),
-                                      const SizedBox(height: 10),
-                                      KeyPairValue(
-                                        "Wallet Balance",
-                                        "₦${userCache.wallet.balance.toString().formatAmount()}",
-                                      ),
-                                      KeyPairValue(
-                                        "Delivery Fee",
-                                        '₦${value1 ? fee.toString().formatAmount() : "0"}',
-                                      ),
-                                      KeyPairValue(
-                                        "Total Order Amount",
-                                        "₦${totalAmount.toString().formatAmount()}",
-                                      ),
-                                      KeyPairValue(
-                                        "New Balance",
-                                        "₦${(num.parse(userCache.wallet.balance!) - totalAmount).toString().formatAmount()}",
-                                      ),
-                                      const SizedBox(height: 20),
-                                      Row(
-                                        children: [
-                                          Expanded(
-                                            child: SizedBox(
-                                              height: 36,
-                                              width: 153,
-                                              child: OpenElevatedButton(
-                                                onPressed: () {
-                                                  context.pop();
-                                                },
-                                                child: Center(
-                                                  child: Text('Cancel',
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyMedium),
-                                                ),
+                  builder: (context, state) => state is CreatingDonation
+                      ? const Center(
+                          child: CustomIndicator(
+                            color: Color(0xFFF56630),
+                          ),
+                        )
+                      : Row(
+                          children: [
+                            Expanded(
+                              child: CustomButton(
+                                borderRadius: 30,
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        backgroundColor: Colors.transparent,
+                                        contentPadding: const EdgeInsets.all(0),
+                                        insetPadding: const EdgeInsets.all(0),
+                                        content: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Container(
+                                              padding: const EdgeInsets.all(20),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
                                               ),
-                                            ),
-                                          ),
-                                          const SizedBox(width: 20),
-                                          Expanded(
-                                            child: SizedBox(
-                                              height: 36,
-                                              width: 153,
-                                              child: CustomButton(
-                                                onTap: () {
-                                                  final (branchId, businessId) =
-                                                      businessCache
-                                                          .businessBranchId(
-                                                              cartCache
-                                                                  .carts
-                                                                  .first
-                                                                  .vendorId);
-                                                  context.pop();
-                                                  context
-                                                      .read<CheckoutBloc>()
-                                                      .add(
-                                                        DonatingEvent(
-                                                          branchId: branchId,
-                                                          businessId:
-                                                              businessId,
-                                                          isAnonymous: value3,
-                                                          privateDonation:
-                                                              value4
-                                                                  ? "0"
-                                                                  : "1",
-                                                          noOfPeople: num.parse(
-                                                              numberOfDonee
-                                                                  .text),
-                                                          products: cartCache
-                                                              .toJson(),
-                                                          type: value2
-                                                              ? "pickup"
-                                                              : "delivery",
-                                                          vendorId: cartCache
-                                                              .carts
-                                                              .first
-                                                              .vendorId!
-                                                              .toString(),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    "Will you like to continue your payment with card?",
+                                                    style: Theme.of(context)
+                                                        .textTheme
+                                                        .headlineSmall
+                                                        ?.copyWith(
+                                                          fontSize: 16,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          color: const Color(
+                                                              0xFF000000),
                                                         ),
-                                                      );
-                                                },
-                                                text: 'Proceed',
+                                                    textAlign: TextAlign.center,
+                                                  ),
+                                                  const SizedBox(height: 20),
+                                                  Row(
+                                                    children: [
+                                                      Expanded(
+                                                        child: SizedBox(
+                                                          height: 36,
+                                                          width: 153,
+                                                          child:
+                                                              OpenElevatedButton(
+                                                            onPressed: () {
+                                                              context.pop();
+                                                            },
+                                                            child: Center(
+                                                              child: Text(
+                                                                  'Cancel',
+                                                                  style: Theme.of(
+                                                                          context)
+                                                                      .textTheme
+                                                                      .bodyMedium),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      const SizedBox(width: 20),
+                                                      Expanded(
+                                                        child: SizedBox(
+                                                          height: 36,
+                                                          width: 153,
+                                                          child: CustomButton(
+                                                            onTap: () {
+                                                              _donate();
+                                                            },
+                                                            text: 'Continue',
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
                                               ),
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  );
+                                },
+                                text: "Pay with card",
+                              ),
                             ),
-                          );
-                        },
-                      );
-                    },
-                    style: ButtonStyle(
-                      shape: MaterialStateProperty.all(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(45),
+                            const SizedBox(width: 20),
+                            Expanded(
+                              child: OpenElevatedButton(
+                                borderRadius: 30,
+                                onPressed: _donate,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    if (state is CheckingOut) ...{
+                                      const CustomIndicator(),
+                                    } else ...{
+                                      // SvgPicture.asset(
+                                      //   'assets/icons/wallet.svg',
+                                      //   color: Colors.white,
+                                      // ),
+                                      const Text('  Pay with wallet')
+                                    },
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        if (state is CreatingDonation) ...{
-                          const CustomIndicator(),
-                        } else ...{
-                          SvgPicture.asset('assets/icons/wallet.svg',
-                              color: Colors.white),
-                          const Text('  Pay'),
-                        },
-                      ],
-                    ),
-                  ),
                 ),
               ),
             ),
+    );
+  }
+
+  _donate() {
+    if (numberOfDonee.text.isEmpty || numberOfDonee.text == "Others") {
+      return;
+    }
+
+    if (!value2 && deliveryAddressController.text.isEmpty) {
+      context.buildError("Nearest Delivery Location is required.");
+      return;
+    }
+
+    if ((num.parse(userCache.wallet.balance!) - totalAmount)
+        .toString()
+        .startsWith("-")) {
+      context.push(EmptyWalletMessageScreen.route);
+      return;
+    }
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: Colors.transparent,
+          contentPadding: const EdgeInsets.all(0),
+          insetPadding: const EdgeInsets.all(0),
+          content: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Summary",
+                      style:
+                          Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xFF000000),
+                              ),
+                    ),
+                    const Divider(
+                      color: Colors.grey,
+                    ),
+                    const SizedBox(height: 5),
+                    ...cartCache.carts.map((cart) {
+                      return Builder(builder: (context) {
+                        return KeyPairValue(
+                          "${cart..name}\n₦${cart..price.toString().formatAmount()}",
+                          "Per person \nx${cart.quantity} QTY",
+                          boldTitle: true,
+                        );
+                      });
+                    }),
+                    const SizedBox(height: 10),
+                    Text(
+                      "Payment Summary",
+                      style:
+                          Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: const Color(0xFF000000),
+                              ),
+                    ),
+                    const SizedBox(height: 10),
+                    KeyPairValue(
+                      "Wallet Balance",
+                      "₦${userCache.wallet.balance.toString().formatAmount()}",
+                    ),
+                    KeyPairValue(
+                      "Delivery Fee",
+                      '₦${value1 ? fee.toString().formatAmount() : "0"}',
+                    ),
+                    KeyPairValue(
+                      "Total Order Amount",
+                      "₦${totalAmount.toString().formatAmount()}",
+                    ),
+                    KeyPairValue(
+                      "New Balance",
+                      "₦${(num.parse(userCache.wallet.balance!) - totalAmount).toString().formatAmount()}",
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: SizedBox(
+                            height: 36,
+                            width: 153,
+                            child: OpenElevatedButton(
+                              onPressed: () {
+                                context.pop();
+                              },
+                              child: Center(
+                                child: Text('Cancel',
+                                    style:
+                                        Theme.of(context).textTheme.bodyMedium),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 20),
+                        Expanded(
+                          child: SizedBox(
+                            height: 36,
+                            width: 153,
+                            child: CustomButton(
+                              onTap: () {
+                                final (branchId, businessId) =
+                                    businessCache.businessBranchId(
+                                        cartCache.carts.first.vendorId);
+                                context.pop();
+                                context.read<CheckoutBloc>().add(
+                                      DonatingEvent(
+                                        branchId: branchId,
+                                        businessId: businessId,
+                                        isAnonymous: value3,
+                                        privateDonation: value4 ? "0" : "1",
+                                        noOfPeople:
+                                            num.parse(numberOfDonee.text),
+                                        products: cartCache.toJson(),
+                                        type: value2 ? "pickup" : "delivery",
+                                        vendorId: cartCache
+                                            .carts.first.vendorId!
+                                            .toString(),
+                                      ),
+                                    );
+                              },
+                              text: 'Proceed',
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

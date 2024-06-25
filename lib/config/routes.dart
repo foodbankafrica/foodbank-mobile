@@ -170,12 +170,12 @@ final routes = GoRouter(
       builder: (BuildContext context, GoRouterState state) =>
           const TrackOrderScreen(),
     ),
-    GoRoute(
-      path: QRScannerScreen.route,
-      name: QRScannerScreen.name,
-      builder: (BuildContext context, GoRouterState state) =>
-          const QRScannerScreen(),
-    ),
+    // GoRoute(
+    //   path: QRScannerScreen.route,
+    //   name: QRScannerScreen.name,
+    //   builder: (BuildContext context, GoRouterState state) =>
+    //       const QRScannerScreen(),
+    // ),
     GoRoute(
       path: CheckoutScreen.route,
       name: CheckoutScreen.name,

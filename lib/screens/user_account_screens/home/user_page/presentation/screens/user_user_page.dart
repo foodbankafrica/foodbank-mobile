@@ -6,8 +6,6 @@ import 'package:food_bank/common/bottom_sheets/update_avatar_sheet.dart';
 import 'package:food_bank/common/donor_bottom_nav_bar.dart';
 import 'package:food_bank/common/widgets.dart';
 import 'package:food_bank/config/extensions/custom_extensions.dart';
-import 'package:food_bank/core/cache/cache_key.dart';
-import 'package:food_bank/core/cache/cache_store.dart';
 import 'package:food_bank/screens/user_account_screens/home/user_page/presentation/screens/delivery_address.dart';
 import 'package:food_bank/screens/user_account_screens/home/user_page/presentation/screens/edit_profile_info_page.dart';
 import 'package:food_bank/screens/user_account_screens/home/user_page/presentation/screens/faq_page.dart';
@@ -17,7 +15,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../auth/cache/user_cache.dart';
 import '../../../../auth/presentation/bloc/auth_bloc.dart';
-import '../../../../auth/presentation/screens/signin_screen.dart';
 import 'change_password_page.dart';
 import 'kyc/verifications_screen.dart';
 import 'support_screen.dart';
@@ -164,10 +161,7 @@ class _UserPageState extends State<UserPage> {
                 const Divider(thickness: 0.5),
                 UserOptions(
                   onTap: () {
-                    CacheStore().remove(key: CacheKey.token);
-                    Future.delayed(const Duration(seconds: 2), () {
-                      context.go(SignInScreen.route);
-                    });
+                    context.logout();
                   },
                   icon: 'logout',
                   title: 'Logout',

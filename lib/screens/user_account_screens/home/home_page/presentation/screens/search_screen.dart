@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:food_bank/common/text_fields.dart';
 import 'package:food_bank/common/widgets.dart';
+import 'package:food_bank/config/extensions/custom_extensions.dart';
 import 'package:food_bank/screens/donor_account_screens/donor_checkout_screen.dart';
 import 'package:food_bank/screens/user_account_screens/home/home_page/presentation/bloc/business_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -22,7 +23,7 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   late Debouncer _debouncer;
-  final TextEditingController addressController = TextEditingController();
+  final TextEditingController controller = TextEditingController();
 
   @override
   void initState() {
@@ -43,6 +44,7 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   void dispose() {
     _debouncer.reset();
+    controller.dispose();
     super.dispose();
   }
 
@@ -50,7 +52,13 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     return BlocConsumer<BusinessBloc, BusinessState>(
       listener: (context, state) {
-        print(state);
+        if (state is SearchingFail) {
+          if (state.error.toLowerCase() == "unauthenticated") {
+            context.buildError(state.error);
+            context.logout();
+          }
+          context.buildError(state.error);
+        }
       },
       builder: (context, state) => Scaffold(
         appBar: const FoodBankAppBar(title: 'Search'),
