@@ -44,11 +44,13 @@ import '../screens/user_account_screens/home/my_bag_page/presentation/screens/vi
 import '../screens/user_account_screens/home/user_page/presentation/screens/change_password_page.dart';
 import '../screens/user_account_screens/home/user_page/presentation/screens/kyc/kyc_success_screen.dart';
 import '../screens/user_account_screens/home/user_page/presentation/screens/kyc/verifications_screen.dart';
+import '../screens/user_account_screens/home/user_page/presentation/screens/live_support_screen.dart';
 import '../screens/user_account_screens/home/user_page/presentation/screens/support_screen.dart';
 import '../screens/user_account_screens/home/user_page/presentation/screens/transaction_summary_screen.dart';
 
 final routes = GoRouter(
   initialLocation: SplashScreen.route,
+  // initialLocation: SupportScreen.route,
   routes: <GoRoute>[
     GoRoute(
       path: SplashScreen.route,
@@ -244,6 +246,12 @@ final routes = GoRouter(
       name: SupportScreen.name,
       builder: (BuildContext context, GoRouterState state) =>
           const SupportScreen(),
+    ),
+    GoRoute(
+      path: LiveSupportScreen.route,
+      name: LiveSupportScreen.name,
+      builder: (BuildContext context, GoRouterState state) =>
+          const LiveSupportScreen(),
     ),
     GoRoute(
       path: ReleaseNotesPage.route,

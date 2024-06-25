@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:food_bank/common/widgets.dart';
-import 'kyc_success_screen.dart';
+import 'package:food_bank/screens/user_account_screens/home/user_page/presentation/screens/kyc/kyc_screen.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../auth/cache/user_cache.dart';
@@ -16,8 +16,6 @@ class VerificationsScreen extends StatefulWidget {
 
 class _VerificationsScreenState extends State<VerificationsScreen> {
   final UserCache userCache = UserCache.instance;
-  final GlobalKey<FormState> _formKey = GlobalKey();
-  bool isLoading = true;
 
   final TextEditingController bvnController = TextEditingController();
   final TextEditingController genderController = TextEditingController();
@@ -26,89 +24,54 @@ class _VerificationsScreenState extends State<VerificationsScreen> {
   final TextEditingController dobController = TextEditingController();
 
   @override
-  initState() {
-    setUserDetails();
-    Future.delayed(
-      const Duration(seconds: 3),
-      () {
-        setState(
-          () {
-            isLoading = false;
-          },
-        );
-      },
-    );
-    super.initState();
-  }
-
-  setUserDetails() {
-    final user = userCache.user;
-    phoneController.text = user.phone!;
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final kyc = userCache.kyc;
     return Scaffold(
       appBar: const FoodBankAppBar(
         title: 'Verification',
       ),
-      body: isLoading
-          ? const Center(
-              child: CustomIndicator(
-                color: Color(0xFFF56630),
-              ),
-            )
-          : SafeArea(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                    right: 18.0,
-                    left: 18.0,
-                  ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.only(
+              right: 18.0,
+              left: 18.0,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Complete your verification to enjoy all the features of the app.',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 40.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Complete your verification to enjoy all the features of the app.',
-                        style: Theme.of(context).textTheme.bodyLarge,
+                      _verifiedElements(
+                        context,
+                        "Phone Number",
+                        kyc.phoneVerified == 1,
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 40.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _verifiedElements(
-                              context,
-                              "Email Address",
-                              true,
-                              null,
-                            ),
-                            _verifiedElements(
-                              context,
-                              "Phone Number",
-                              true,
-                              null,
-                            ),
-                            _verifiedElements(
-                              context,
-                              "User Identity",
-                              false,
-                              null,
-                            ),
-                            _verifiedElements(
-                              context,
-                              "Address",
-                              true,
-                              null,
-                            ),
-                          ],
-                        ),
+                      _verifiedElements(
+                        context,
+                        "BVN",
+                        kyc.bvnVerified == 1,
+                      ),
+                      _verifiedElements(
+                        context,
+                        "User Identity",
+                        kyc.verified == 1,
                       ),
                     ],
                   ),
                 ),
-              ),
+              ],
             ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -116,7 +79,6 @@ class _VerificationsScreenState extends State<VerificationsScreen> {
     BuildContext context,
     String title,
     bool verified,
-    Function()? onTap,
   ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 20.0),
@@ -130,9 +92,11 @@ class _VerificationsScreenState extends State<VerificationsScreen> {
                 ),
           ),
           InkWell(
-            onTap: () {
-              context.push(KycSuccessScreen.route);
-            },
+            onTap: verified
+                ? null
+                : () {
+                    context.push(KycScreen.route);
+                  },
             child: Container(
               padding: const EdgeInsets.symmetric(
                 horizontal: 10,

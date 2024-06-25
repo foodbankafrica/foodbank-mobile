@@ -19,7 +19,6 @@ import '../../../../auth/cache/user_cache.dart';
 import '../../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../../auth/presentation/screens/signin_screen.dart';
 import 'change_password_page.dart';
-import 'kyc/kyc_screen.dart';
 import 'kyc/verifications_screen.dart';
 import 'support_screen.dart';
 

@@ -75,12 +75,11 @@ class _DonorMyBagScreenState extends State<DonorMyBagScreen> {
   }
 
   _updateFee() {
-    print("Heelo");
     setState(
       () {
         fee = _deliveryFee *
             (numberOfDonee.text.isNotEmpty ? num.parse(numberOfDonee.text) : 1);
-        subTotal = cartCache.fees().$1;
+        subTotal = cartCache.fees();
         totalAmount = ((subTotal *
                 num.parse(
                     numberOfDonee.text.isEmpty ? '1' : numberOfDonee.text)) +
@@ -599,7 +598,7 @@ class _DonorMyBagScreenState extends State<DonorMyBagScreen> {
                                       ),
                                       KeyPairValue(
                                         "Delivery Fee",
-                                        '₦${fee.toString().formatAmount()}',
+                                        '₦${value1 ? fee.toString().formatAmount() : "0"}',
                                       ),
                                       KeyPairValue(
                                         "Total Order Amount",
@@ -636,11 +635,21 @@ class _DonorMyBagScreenState extends State<DonorMyBagScreen> {
                                               width: 153,
                                               child: CustomButton(
                                                 onTap: () {
+                                                  final (branchId, businessId) =
+                                                      businessCache
+                                                          .businessBranchId(
+                                                              cartCache
+                                                                  .carts
+                                                                  .first
+                                                                  .vendorId);
                                                   context.pop();
                                                   context
                                                       .read<CheckoutBloc>()
                                                       .add(
                                                         DonatingEvent(
+                                                          branchId: branchId,
+                                                          businessId:
+                                                              businessId,
                                                           isAnonymous: value3,
                                                           privateDonation:
                                                               value4

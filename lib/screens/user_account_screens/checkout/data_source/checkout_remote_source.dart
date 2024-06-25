@@ -39,6 +39,8 @@ abstract class CheckoutRemoteSource {
     required String privateDonation,
     required num noOfPeople,
     required bool isAnonymous,
+    required String branchId,
+    required String businessId,
   });
   Future<String> redeem({
     required String address,
@@ -176,6 +178,8 @@ class CheckoutRemoteSourceImpl implements CheckoutRemoteSource {
     required String privateDonation,
     required num noOfPeople,
     required bool isAnonymous,
+    required String branchId,
+    required String businessId,
   }) async {
     final res = await _apiClient.post(url: CheckoutEndpoint.donation, body: {
       "products": products,
@@ -184,6 +188,8 @@ class CheckoutRemoteSourceImpl implements CheckoutRemoteSource {
       "no_of_people": noOfPeople,
       "is_anonymous": isAnonymous,
       "is_private": privateDonation,
+      "branch_id": branchId,
+      "business_id": businessId,
     });
     if (res.isSuccessful) {
       return DonateCheckout.fromJson(res.data);

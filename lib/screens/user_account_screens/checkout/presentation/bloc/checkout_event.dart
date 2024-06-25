@@ -45,6 +45,7 @@ class DonatingEvent extends CheckoutEvent {
   final bool isAnonymous;
   final String type;
   final String vendorId;
+  final String branchId, businessId;
   final String privateDonation;
 
   DonatingEvent({
@@ -54,6 +55,8 @@ class DonatingEvent extends CheckoutEvent {
     required this.products,
     required this.type,
     required this.vendorId,
+    required this.branchId,
+    required this.businessId,
   });
 }
 

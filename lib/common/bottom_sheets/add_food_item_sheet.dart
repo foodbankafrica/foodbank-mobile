@@ -439,6 +439,7 @@ class _AddFoodItemBottomSheetState extends State<AddFoodItemBottomSheet> {
                         .alreadyAddToCart(widget.product!.id.toString()))
                       CustomButton(
                         onTap: () {
+                          context.pop();
                           context.push(
                             widget.isDonor
                                 ? DonorMyBagScreen.route

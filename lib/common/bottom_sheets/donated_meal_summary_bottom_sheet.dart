@@ -318,7 +318,7 @@ class _RedeemCodesBottomSheetState extends State<RedeemCodesBottomSheet> {
                             padding: const EdgeInsets.symmetric(horizontal: 5),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(5),
-                              color: Colors.amber,
+                              color: Colors.black,
                             ),
                             child: Text(
                               'Redeemed',
@@ -328,6 +328,7 @@ class _RedeemCodesBottomSheetState extends State<RedeemCodesBottomSheet> {
                                   .copyWith(
                                     fontWeight: FontWeight.w300,
                                     fontSize: 12,
+                                    color: const Color(0xFFEB5017),
                                   ),
                             ),
                           ),

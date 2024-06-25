@@ -44,6 +44,7 @@ class _KycSuccessScreenState extends State<KycSuccessScreen> {
         onClick: () {
           context
             ..pop()
+            ..pop()
             ..pop();
         },
       ),

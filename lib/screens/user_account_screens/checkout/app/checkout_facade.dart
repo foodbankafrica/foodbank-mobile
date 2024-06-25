@@ -64,6 +64,8 @@ class CheckoutFacade {
     required String privateDonation,
     required num noOfPeople,
     required bool isAnonymous,
+    required String branchId,
+    required String businessId,
   }) {
     return _checkoutService
         .donating(
@@ -73,6 +75,8 @@ class CheckoutFacade {
           noOfPeople: noOfPeople,
           isAnonymous: isAnonymous,
           privateDonation: privateDonation,
+          branchId: branchId,
+          businessId: businessId,
         )
         .run();
   }

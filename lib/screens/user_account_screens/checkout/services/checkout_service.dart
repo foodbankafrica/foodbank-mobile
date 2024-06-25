@@ -41,6 +41,8 @@ abstract class CheckoutService {
     required String privateDonation,
     required num noOfPeople,
     required bool isAnonymous,
+    required String branchId,
+    required String businessId,
   });
   TaskEither<Failure, DonationsResponse> getDonation(int pageNumber);
   TaskEither<Failure, String> redeem({
@@ -128,6 +130,8 @@ class CheckoutServiceImpl extends CheckoutService
     required String privateDonation,
     required num noOfPeople,
     required bool isAnonymous,
+    required String branchId,
+    required String businessId,
   }) {
     return TaskEither.tryCatch(
       () async => checkInternetThenMakeRequest(_networkInfo, request: () async {
@@ -138,6 +142,8 @@ class CheckoutServiceImpl extends CheckoutService
           noOfPeople: noOfPeople,
           isAnonymous: isAnonymous,
           privateDonation: privateDonation,
+          branchId: branchId,
+          businessId: businessId,
         );
         return res;
       }),

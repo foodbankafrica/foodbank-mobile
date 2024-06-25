@@ -35,14 +35,14 @@ class CartCache {
     return contained;
   }
 
-  (num, num, num) fees() {
+  num fees() {
     num subTotal = 0;
-    num deliveryFee = 2000;
+
     for (Bag cart in (_carts ?? [])) {
       subTotal += (num.parse(cart.price!) * cart.quantity!);
     }
 
-    return (subTotal, deliveryFee, subTotal + deliveryFee);
+    return subTotal;
   }
 
   List<Map<String, dynamic>> toJson() {

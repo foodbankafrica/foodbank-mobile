@@ -14,7 +14,6 @@ import '../../../core/cache/cache_key.dart';
 import '../../../core/cache/cache_store.dart';
 import '../../user_account_screens/auth/presentation/screens/signin_screen.dart';
 import '../../user_account_screens/home/user_page/presentation/screens/delivery_address.dart';
-import '../../user_account_screens/home/user_page/presentation/screens/kyc/kyc_screen.dart';
 import '../../user_account_screens/home/user_page/presentation/screens/kyc/verifications_screen.dart';
 import '../../user_account_screens/home/user_page/presentation/screens/support_screen.dart';
 

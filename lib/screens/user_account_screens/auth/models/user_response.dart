@@ -258,22 +258,26 @@ class Kyc {
   String? dob;
   String? address;
   String? gender;
+  dynamic phoneVerified;
+  dynamic emailVerified;
+  dynamic bvnVerified;
   dynamic verified;
   String? createdAt;
   String? updatedAt;
 
-  Kyc(
-      {this.id,
-      this.userId,
-      this.kycVerificationLogId,
-      this.bvn,
-      this.phone,
-      this.dob,
-      this.address,
-      this.gender,
-      this.verified,
-      this.createdAt,
-      this.updatedAt});
+  Kyc({
+    this.id,
+    this.userId,
+    this.kycVerificationLogId,
+    this.bvn,
+    this.phone,
+    this.dob,
+    this.address,
+    this.gender,
+    this.verified,
+    this.createdAt,
+    this.updatedAt,
+  });
 
   Kyc.fromJson(Map<String, dynamic> json) {
     'kyc ========= $json'.log();
@@ -285,6 +289,9 @@ class Kyc {
     dob = json['dob'];
     address = json['address'];
     gender = json['gender'];
+    phoneVerified = json['phone_verified'];
+    emailVerified = json['email_verified'];
+    bvnVerified = json['bvn_verified'];
     verified = json['verified'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
@@ -300,6 +307,9 @@ class Kyc {
     data['dob'] = dob;
     data['address'] = address;
     data['gender'] = gender;
+    data['phone_verified'] = phoneVerified;
+    data['email_verified'] = emailVerified;
+    data['bvn_verified'] = bvnVerified;
     data['verified'] = verified;
     data['created_at'] = createdAt;
     data['updated_at'] = updatedAt;

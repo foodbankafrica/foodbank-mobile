@@ -322,7 +322,7 @@ class _CheckoutScreenState extends State<CheckoutScreen>
                                         'assets/icons/inactive-shopping-icon.svg',
                                         color: Colors.white),
                                     Text(
-                                      '   ${cartCache.carts.length} Items in bag worth ₦${cartCache.fees().$3.toString().formatAmount()}',
+                                      '   ${cartCache.carts.length} Items in bag worth ₦${cartCache.fees().toString().formatAmount()}',
                                     )
                                   ],
                                 )),

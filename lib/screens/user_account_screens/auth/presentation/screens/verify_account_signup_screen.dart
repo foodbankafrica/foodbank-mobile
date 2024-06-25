@@ -47,6 +47,12 @@ class _VerifyAccountSignUpScreenState extends State<VerifyAccountSignUpScreen> {
   }
 
   @override
+  void dispose() {
+    _timer!.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
@@ -55,6 +61,7 @@ class _VerifyAccountSignUpScreenState extends State<VerifyAccountSignUpScreen> {
             if (state is VerifyingOtpFail) {
               context.buildError(state.error);
             } else if (state is VerifyingOtpSuccessful) {
+              context.pop();
               context.toast(content: "Phone number verified successfully!");
               userCache.updateCache(
                 user: state.user.user!,
@@ -70,7 +77,6 @@ class _VerifyAccountSignUpScreenState extends State<VerifyAccountSignUpScreen> {
                 builder: (context) {
                   return BlocConsumer<AddressBloc, AddressState>(
                     listener: (context, state) {
-                      print(state);
                       if (state is AddingAddressFail) {
                         context.buildError(state.error);
 

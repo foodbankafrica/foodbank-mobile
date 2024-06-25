@@ -161,13 +161,13 @@ class _MyBagScreenState extends State<MyBagScreen> {
         : deliveryFee * _selectedValue(selectedValue!);
     final totalAmount = selectedSubDeliveryType == "Pickup" || isSelected2
         ? (startDateAndEndDateCompare == 0
-                ? cartCache.fees().$1
-                : cartCache.fees().$1 * startDateAndEndDateCompare) *
+                ? cartCache.fees()
+                : cartCache.fees() * startDateAndEndDateCompare) *
             _selectedValue(selectedValue!)
         : newDeliveryFee +
             (startDateAndEndDateCompare == 0
-                    ? cartCache.fees().$1
-                    : cartCache.fees().$1 * startDateAndEndDateCompare) *
+                    ? cartCache.fees()
+                    : cartCache.fees() * startDateAndEndDateCompare) *
                 _selectedValue(selectedValue!);
 
     return (totalAmount, startDateAndEndDateCompare);
@@ -1038,8 +1038,8 @@ class _MyBagScreenState extends State<MyBagScreen> {
                                         ),
                                         Text(
                                           calculateTotal().$2 == 0
-                                              ? '₦${(cartCache.fees().$1).toString().formatAmount()}'
-                                              : '₦${((cartCache.fees().$1 * calculateTotal().$2) * _selectedValue(selectedValue!)).toString().formatAmount()}',
+                                              ? '₦${(cartCache.fees()).toString().formatAmount()}'
+                                              : '₦${((cartCache.fees() * calculateTotal().$2) * _selectedValue(selectedValue!)).toString().formatAmount()}',
                                           style: Theme.of(context)
                                               .textTheme
                                               .headlineSmall
@@ -1471,7 +1471,7 @@ class _MyBagScreenState extends State<MyBagScreen> {
   }
 
   void _onPay(bool payWithCard) {
-    final (subTotal, _, _) = cartCache.fees();
+    final subTotal = cartCache.fees();
     context.pop();
     final (branchId, businessId) =
         businessCache.businessBranchId(cartCache.carts.first.vendorId);

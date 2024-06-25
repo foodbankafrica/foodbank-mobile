@@ -55,6 +55,8 @@ class CheckoutBloc extends Bloc<CheckoutEvent, CheckoutState> {
             noOfPeople: event.noOfPeople,
             isAnonymous: event.isAnonymous,
             privateDonation: event.privateDonation,
+            branchId: event.branchId,
+            businessId: event.businessId,
           );
           failureOrSuccess.fold(
             (error) => emit(CreatingDonationFail(error: error.message)),

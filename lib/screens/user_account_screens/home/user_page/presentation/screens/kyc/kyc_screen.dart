@@ -32,7 +32,7 @@ class _KycScreenState extends State<KycScreen> {
 
   @override
   initState() {
-    if (userCache.kyc.bvn != null) {
+    if (userCache.kyc.bvnVerified != null && userCache.kyc.bvnVerified == 1) {
       Future.delayed(
         const Duration(seconds: 3),
         () {
@@ -219,7 +219,7 @@ class _KycScreenState extends State<KycScreen> {
                               labelText: "Whats your address",
                               hintText: "Enter your address",
                               controller: addressController,
-                              keyboardType: TextInputType.emailAddress,
+                              keyboardType: TextInputType.text,
                               validator: (String? value) {
                                 if (value!.isEmpty) {
                                   return 'Address is required.';
